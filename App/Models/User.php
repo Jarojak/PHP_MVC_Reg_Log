@@ -13,11 +13,32 @@ class User extends \Core\Model
 {
 
   /**
-   * Values returned from $_POST
+   * user name
    * 
-   * @var array
+   * @var string
    */
-  private $keys = [];
+  private $name;
+
+  /**
+   * user email
+   * 
+   * @var string
+   */
+  private $email;
+
+  /**
+   * user password
+   * 
+   * @var string
+   */
+  private $password;
+
+  /**
+   * user password_confirmation
+   * 
+   * @var string
+   */
+  private $password_confirmation;
 
   /**
    * Class constructor
@@ -29,7 +50,7 @@ class User extends \Core\Model
   public function __construct($data)
   {
     foreach ($data as $key => $value) {
-      $this->keys[$key] = $value;
+      $this->$key = $value;
     };
   }
 
@@ -40,7 +61,7 @@ class User extends \Core\Model
    */
   public function save()
   {
-    $password_hash = password_hash($this->keys['password'], PASSWORD_DEFAULT);
+    $password_hash = password_hash($this->password, PASSWORD_DEFAULT);
 
     $sql = 'INSERT INTO users (name, email, password_hash)
             VALUES (:name, :email, :password_hash)';
@@ -48,8 +69,8 @@ class User extends \Core\Model
     $db = static::getDB();
     $stmt = $db->prepare($sql);
 
-    $stmt->bindValue(':name', $this->keys['name'], PDO::PARAM_STR);
-    $stmt->bindValue(':email', $this->keys['email'], PDO::PARAM_STR);
+    $stmt->bindValue(':name', $this->name, PDO::PARAM_STR);
+    $stmt->bindValue(':email', $this->email, PDO::PARAM_STR);
     $stmt->bindValue(':password_hash', $password_hash, PDO::PARAM_STR);
 
     $stmt->execute();
