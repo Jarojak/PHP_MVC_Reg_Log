@@ -20,4 +20,14 @@ class Signup extends \Core\Controller
   {
       View::renderTemplate('Signup/new.html');
   }
+
+  /**
+   * Sign up a new user
+   *
+   * @return void
+   */
+  public function createAction()
+  {
+    var_dump($_POST);
+  }
 }
