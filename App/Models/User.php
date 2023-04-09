@@ -34,13 +34,6 @@ class User extends \Core\Model
   public $password;
 
   /**
-   * user password_confirmation
-   * 
-   * @var string
-   */
-  public $password_confirmation;
-
-  /**
    * Error messages
    *
    * @var array
@@ -106,15 +99,11 @@ class User extends \Core\Model
       if (filter_var($this->email, FILTER_VALIDATE_EMAIL) === false) {
           $this->errors[] = 'Invalid email';
       }
-      if ($this->emailExists($this->email)) {
+      if (static::emailExists($this->email)) {
           $this->errors[] = 'email already taken';
       }
 
       // Password
-      if ($this->password != $this->password_confirmation) {
-          $this->errors[] = 'Password must match confirmation';
-      }
-
       if (strlen($this->password) < 6) {
           $this->errors[] = 'Please enter at least 6 characters for the password';
       }
@@ -135,7 +124,7 @@ class User extends \Core\Model
      *
      * @return boolean  True if a record already exists with the specified email, false otherwise
      */
-    protected function emailExists($email)
+    public static function emailExists($email)
     {
         $sql = 'SELECT * FROM users WHERE email = :email';
   
