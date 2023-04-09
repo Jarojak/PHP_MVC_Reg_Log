@@ -64,7 +64,7 @@ class User extends \Core\Model
   /**
    * Save the user model with the current property values
    *
-   * @return void
+   * @return bool
    */
   public function save()
   {
@@ -82,9 +82,7 @@ class User extends \Core\Model
       $stmt->bindValue(':name', $this->name, PDO::PARAM_STR);
       $stmt->bindValue(':email', $this->email, PDO::PARAM_STR);
       $stmt->bindValue(':password_hash', $password_hash, PDO::PARAM_STR);
-      //...
-      // SQL
-      //...
+
       return $stmt->execute();
     }
 
