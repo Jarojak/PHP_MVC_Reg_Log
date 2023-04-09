@@ -28,7 +28,8 @@
                     name: 'required',
                     email: {
                         required: true,
-                        email: true
+                        email: true,
+                        remote: '/account/validate-email'
                     },
                     password: {
                         required: true,
@@ -37,6 +38,11 @@
                     },
                     password_confirmation: {
                         equalTo: '#inputPassword'
+                    }
+                },
+                messages: {
+                    email: {
+                        remote: 'email already taken'
                     }
                 }
             });
