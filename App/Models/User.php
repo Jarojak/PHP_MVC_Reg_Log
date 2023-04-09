@@ -17,28 +17,28 @@ class User extends \Core\Model
    * 
    * @var string
    */
-  private $name;
+  public $name;
 
   /**
    * user email
    * 
    * @var string
    */
-  private $email;
+  public $email;
 
   /**
    * user password
    * 
    * @var string
    */
-  private $password;
+  public $password;
 
   /**
    * user password_confirmation
    * 
    * @var string
    */
-  private $password_confirmation;
+  public $password_confirmation;
 
   /**
    * Error messages
