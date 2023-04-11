@@ -18,6 +18,13 @@ set_error_handler('Core\Error::errorHandler');
 set_exception_handler('Core\Error::exceptionHandler');
 error_reporting(E_ALL);
 
+
+/**
+ * Sessions
+ */
+session_start();
+
+
 /**
  * Routing
  */
