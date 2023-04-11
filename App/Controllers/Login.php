@@ -38,7 +38,9 @@ class Login extends \Core\Controller
 
         } else {
 
-            View::renderTemplate('Login/new.html');
+            View::renderTemplate('Login/new.html', [
+                'email' => $_POST['email'],
+            ]);
 
         }
     }
