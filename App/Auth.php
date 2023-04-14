@@ -103,7 +103,7 @@ class Auth
             return User::findByID($_SESSION['user_id']);
 
         } else {
-            
+
             return static::loginFromRememberCookie();
         }
     }
@@ -121,7 +121,7 @@ class Auth
 
             $remembered_login = RememberedLogin::findByToken($cookie);
 
-            if ($remembered_login) {
+            if ($remembered_login && $remembered_login->hasExpired()) {
 
                 $user = $remembered_login->getUser();
 
