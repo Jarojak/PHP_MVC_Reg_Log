@@ -2,10 +2,11 @@
 
 namespace App\Controllers;
 
-use App\Flash;
+
 use \Core\View;
 use \App\Models\User;
 use \App\Auth;
+use \App\Flash;
 
 /**
  * Login controller
@@ -14,6 +15,7 @@ use \App\Auth;
  */
 class Login extends \Core\Controller
 {
+
     /**
      * Show the login page
      *
@@ -33,9 +35,11 @@ class Login extends \Core\Controller
     {
         $user = User::authenticate($_POST['email'], $_POST['password']);
 
+        $remember_me = isset($_POST['remember_me']);
+
         if ($user) {
 
-            Auth::login($user);
+            Auth::login($user, $remember_me);
 
             Flash::addMessage('Login successful');
 
@@ -47,6 +51,7 @@ class Login extends \Core\Controller
 
             View::renderTemplate('Login/new.html', [
                 'email' => $_POST['email'],
+                'remember_me' => $remember_me
             ]);
 
         }
@@ -73,8 +78,8 @@ class Login extends \Core\Controller
      */
     public function showLogoutMessageAction()
     {
-      Flash::addMessage('Logout successful');
+        Flash::addMessage('Logout successful');
 
-      $this->redirect('/');
+        $this->redirect('/');
     }
 }
