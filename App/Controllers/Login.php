@@ -2,10 +2,11 @@
 
 namespace App\Controllers;
 
-use App\Flash;
+
 use \Core\View;
 use \App\Models\User;
 use \App\Auth;
+use \App\Flash;
 
 /**
  * Login controller
@@ -14,6 +15,7 @@ use \App\Auth;
  */
 class Login extends \Core\Controller
 {
+
     /**
      * Show the login page
      *
@@ -76,8 +78,8 @@ class Login extends \Core\Controller
      */
     public function showLogoutMessageAction()
     {
-      Flash::addMessage('Logout successful');
+        Flash::addMessage('Logout successful');
 
-      $this->redirect('/');
+        $this->redirect('/');
     }
 }

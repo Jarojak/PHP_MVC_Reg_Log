@@ -67,7 +67,7 @@ class RememberedLogin extends \Core\Model
      */
     public function getUser()
     {
-        return User::findByID($this->user_id);        
+        return User::findByID($this->user_id);
     }
 
     /**

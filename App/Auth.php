@@ -16,6 +16,7 @@ class Auth
      * Login the user
      *
      * @param User $user The user model
+     * @param boolean $remember_me Remember the login if true
      *
      * @return void
      */
@@ -26,8 +27,11 @@ class Auth
         $_SESSION['user_id'] = $user->id;
 
         if ($remember_me) {
+
             if ($user->rememberLogin()) {
-                setcookie('remember_me', $user->remember_token, $user->expiry_timestamp, '/' );
+
+                setcookie('remember_me', $user->remember_token, $user->expiry_timestamp, '/');
+
             }
         }
     }
@@ -59,16 +63,6 @@ class Auth
 
       // Finally destroy the session
       session_destroy();
-    }
-
-    /**
-     * Return indicator of whether a user is logged in or not
-     *
-     * @return boolean
-     */
-    public static function isLoggedIn()
-    {
-        return isset($_SESSION['user_id']);
     }
 
     /**
@@ -121,7 +115,7 @@ class Auth
 
             $remembered_login = RememberedLogin::findByToken($cookie);
 
-            if ($remembered_login && $remembered_login->hasExpired()) {
+            if ($remembered_login && ! $remembered_login->hasExpired()) {
 
                 $user = $remembered_login->getUser();
 
