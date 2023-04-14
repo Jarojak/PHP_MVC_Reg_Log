@@ -49,6 +49,20 @@ class User extends \Core\Model
   public $password_hash;
 
   /**
+   * user remember token
+   * 
+   * @var string
+   */
+  public $remember_token;
+
+  /**
+   *  cookie remember login expiry timestamp
+   * 
+   * @var string
+   */
+  public $expiry_timestamp;
+
+  /**
    * Error messages
    *
    * @var array
@@ -219,8 +233,9 @@ class User extends \Core\Model
     {
         $token = new Token();
         $hashed_token = $token->getHash();
+        $this->remember_token = $token->getValue();
 
-        $expiry_timestamp = time() + 60 * 60 * 24 * 30;  // 30 days from now
+        $this->expiry_timestamp = time() + 60 * 60 * 24 * 30;  // 30 days from now
 
         $sql = 'INSERT INTO remembered_logins (token_hash, user_id, expires_at)
                 VALUES (:token_hash, :user_id, :expires_at)';
@@ -230,7 +245,7 @@ class User extends \Core\Model
 
         $stmt->bindValue(':token_hash', $hashed_token, PDO::PARAM_STR);
         $stmt->bindValue(':user_id', $this->id, PDO::PARAM_INT);
-        $stmt->bindValue(':expires_at', date('Y-m-d H:i:s', $expiry_timestamp), PDO::PARAM_STR);
+        $stmt->bindValue(':expires_at', date('Y-m-d H:i:s', $this->expiry_timestamp), PDO::PARAM_STR);
 
         return $stmt->execute();
     }
