@@ -44,7 +44,7 @@ class User extends \Core\Model
     public $password_hash;
 
     /**
-     *  user table password_reset_hash
+     * user table password_reset_hash
      *
      * @var string
      */
@@ -52,11 +52,25 @@ class User extends \Core\Model
 
 
     /**
-     *  user table password_reset_expires_at
+     * user table password_reset_expires_at
      *
      * @var string
      */
     public $password_reset_expires_at;
+
+    /**
+     * user table activation_hash
+     * 
+     * @var string
+     */
+    public $activation_hash;
+
+    /**
+     * user table is_active
+     * 
+     * @var boolean
+     */
+    public $is_active;
 
     /**
      * Error messages
@@ -120,8 +134,11 @@ class User extends \Core\Model
 
             $password_hash = password_hash($this->password, PASSWORD_DEFAULT);
 
-            $sql = 'INSERT INTO users (name, email, password_hash)
-                    VALUES (:name, :email, :password_hash)';
+            $token = new Token();
+            $hashed_token = $token->getHash();
+
+            $sql = 'INSERT INTO users (name, email, password_hash, activation_hash)
+                    VALUES (:name, :email, :password_hash, :activation_hash)';
 
             $db = static::getDB();
             $stmt = $db->prepare($sql);
@@ -129,12 +146,12 @@ class User extends \Core\Model
             $stmt->bindValue(':name', $this->name, PDO::PARAM_STR);
             $stmt->bindValue(':email', $this->email, PDO::PARAM_STR);
             $stmt->bindValue(':password_hash', $password_hash, PDO::PARAM_STR);
+            $stmt->bindValue(':activation_hash', $hashed_token, PDO::PARAM_STR);            
 
             return $stmt->execute();
         }
 
         return false;
-
     }
 
     /**
