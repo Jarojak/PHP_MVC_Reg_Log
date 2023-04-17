@@ -13,53 +13,47 @@ use \App\Token;
 class User extends \Core\Model
 {
     /**
-     * user name
-     * 
-     * @var string
-     */
-    public $name;
-
-    /**
-     * user email
-     * 
-     * @var string  
-     */
-    public $email;
-
-    /**
-     * user password
-     * 
-     * @var string
-     */
-    public $password;
-
-    /**
-     * user id
+     * user table id
      * 
      * @var string
      */
     public $id;
 
     /**
-     * user password_hash
+     * user table name
+     * 
+     * @var string
+     */
+    public $name;
+
+    /**
+     * user table email
+     * 
+     * @var string  
+     */
+    public $email;
+
+    /**
+     * user table password_hash
      * 
      * @var string
      */
     public $password_hash;
 
     /**
-     * user remember token
-     * 
+     *  user table password_reset_hash
+     *
      * @var string
      */
-    public $remember_token;
+    public $password_reset_hash;
+
 
     /**
-     *  cookie remember login expiry timestamp
-     * 
+     *  user table password_reset_expires_at
+     *
      * @var string
      */
-    public $expiry_timestamp;
+    public $password_reset_expires_at;
 
     /**
      * Error messages
@@ -67,6 +61,27 @@ class User extends \Core\Model
      * @var array
      */
     public $errors = [];
+
+    /**
+     * user password
+     * 
+     * @var string
+     */
+    private $password;
+
+    /**
+     * user remember token
+     * 
+     * @var string
+     */
+    private $remember_token;
+
+    /**
+     *  cookie remember login expiry timestamp
+     * 
+     * @var string
+     */
+    private $expiry_timestamp;
 
     /**
      * Class constructor
@@ -265,9 +280,45 @@ class User extends \Core\Model
         if ($user) {
 
 
-            // Start password reset process here
+            if ($user->startPasswordReset()) {
 
 
+                // Send email here...                
+
+
+            }
         }
+    }
+
+    /**
+     * Start the password reset process by generating a new token and expiry
+     *
+     * @return void
+     */
+    protected function startPasswordReset()
+    {
+        $token = new Token();
+        $hashed_token = $token->getHash();
+
+
+        $expiry_timestamp = time() + 60 * 60 * 2;  // 2 hours from now
+
+
+        $sql = 'UPDATE users
+                SET password_reset_hash = :token_hash,
+                    password_reset_expires_at = :expires_at
+                WHERE id = :id';
+
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+
+
+        $stmt->bindValue(':token_hash', $hashed_token, PDO::PARAM_STR);
+        $stmt->bindValue(':expires_at', date('Y-m-d H:i:s', $expiry_timestamp), PDO::PARAM_STR);
+        $stmt->bindValue(':id', $this->id, PDO::PARAM_INT);
+
+
+        return $stmt->execute();
     }
 }
