@@ -69,17 +69,17 @@
 
     <form method="post" id="formProfile" action="/profile/update">
 
-        <div>
+        <div class="mb-3">
             <label for="inputName">Name</label>
-            <input id="inputName" name="name" placeholder="Name" value="{{ user.name }}" required />
+            <input id="inputName" name="name" placeholder="Name" value="{{ user.name }}" required class="form-control"/>
         </div>
-        <div>
+        <div class="mb-3">
             <label for="inputEmail">Email address</label>
-            <input id="inputEmail" name="email" placeholder="email address" value="{{ user.email }}" required type="email" />
+            <input id="inputEmail" name="email" placeholder="email address" value="{{ user.email }}" required type="email" class="form-control"/>
         </div>
-        <div>
+        <div class="mb-3">
             <label for="inputPassword">Password</label>
-            <input type="password" id="inputPassword" name="password" placeholder="Password" aria-describedby="helpBlock"/>
+            <input type="password" id="inputPassword" name="password" placeholder="Password" aria-describedby="helpBlock" class="form-control"/>
             <span id="helpBlock">Leave blank to keep current password</span>
         </div>
 
