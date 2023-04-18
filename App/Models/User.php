@@ -108,6 +108,13 @@ class User extends \Core\Model
     private $password_reset_token;
 
     /**
+     * user activation_token
+     * 
+     * @var string
+     */
+    private $activation_token;
+
+    /**
      * Class constructor
      *
      * @param array $data  Initial property values (optional)
@@ -443,5 +450,20 @@ class User extends \Core\Model
         }
 
         return false;
+    }
+
+    /**
+     * Send an email to the user containing the activation link
+     *
+     * @return void
+     */
+    public function sendActivationEmail()
+    {
+        $url = 'http://' . $_SERVER['HTTP_HOST'] . '/signup/activate/' . $this->activation_token;
+
+        $text = View::getTemplate('Signup/activation_email.txt', ['url' => $url]);
+        $html = View::getTemplate('Signup/activation_email.html', ['url' => $url]);
+
+        Mail::send(Config::SMTP_FROM, $this->email, 'Account activation', $text, $html);
     }
 }
