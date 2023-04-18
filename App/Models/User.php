@@ -44,7 +44,7 @@ class User extends \Core\Model
     public $password_hash;
 
     /**
-     *  user table password_reset_hash
+     * user table password_reset_hash
      *
      * @var string
      */
@@ -52,11 +52,25 @@ class User extends \Core\Model
 
 
     /**
-     *  user table password_reset_expires_at
+     * user table password_reset_expires_at
      *
      * @var string
      */
     public $password_reset_expires_at;
+
+    /**
+     * user table activation_hash
+     * 
+     * @var string
+     */
+    public $activation_hash;
+
+    /**
+     * user table is_active
+     * 
+     * @var boolean
+     */
+    public $is_active;
 
     /**
      * Error messages
@@ -94,6 +108,13 @@ class User extends \Core\Model
     private $password_reset_token;
 
     /**
+     * user activation_token
+     * 
+     * @var string
+     */
+    private $activation_token;
+
+    /**
      * Class constructor
      *
      * @param array $data  Initial property values (optional)
@@ -120,8 +141,11 @@ class User extends \Core\Model
 
             $password_hash = password_hash($this->password, PASSWORD_DEFAULT);
 
-            $sql = 'INSERT INTO users (name, email, password_hash)
-                    VALUES (:name, :email, :password_hash)';
+            $token = new Token();
+            $hashed_token = $token->getHash();
+			$this->activation_token = $token->getValue();											 
+            $sql = 'INSERT INTO users (name, email, password_hash, activation_hash)
+                    VALUES (:name, :email, :password_hash, :activation_hash)';
 
             $db = static::getDB();
             $stmt = $db->prepare($sql);
@@ -129,12 +153,12 @@ class User extends \Core\Model
             $stmt->bindValue(':name', $this->name, PDO::PARAM_STR);
             $stmt->bindValue(':email', $this->email, PDO::PARAM_STR);
             $stmt->bindValue(':password_hash', $password_hash, PDO::PARAM_STR);
+            $stmt->bindValue(':activation_hash', $hashed_token, PDO::PARAM_STR);            
 
             return $stmt->execute();
         }
 
         return false;
-
     }
 
     /**
@@ -226,7 +250,7 @@ class User extends \Core\Model
     {
         $user = static::findByEmail($email);
 
-        if ($user) {
+        if ($user && $user->is_active) {
             if (password_verify($password, $user->password_hash)) {
                 return $user;
             }
@@ -426,5 +450,45 @@ class User extends \Core\Model
         }
 
         return false;
+    }
+
+    /**
+     * Send an email to the user containing the activation link
+     *
+     * @return void
+     */
+    public function sendActivationEmail()
+    {
+        $url = 'http://' . $_SERVER['HTTP_HOST'] . '/signup/activate/' . $this->activation_token;
+
+        $text = View::getTemplate('Signup/activation_email.txt', ['url' => $url]);
+        $html = View::getTemplate('Signup/activation_email.html', ['url' => $url]);
+
+        Mail::send(Config::SMTP_FROM, $this->email, 'Account activation', $text, $html);
+    }
+
+    /**
+     * Activate the user account with the specified activation token
+     *
+     * @param string $value Activation token from the URL
+     *
+     * @return void
+     */
+    public static function activate($value)
+    {
+        $token = new Token($value);
+        $hashed_token = $token->getHash();
+
+        $sql = 'UPDATE users
+                SET is_active = 1,
+                    activation_hash = null
+                WHERE activation_hash = :hashed_token';
+
+        $db = static::getDB();
+        $stmt = $db->prepare($sql);
+
+        $stmt->bindValue(':hashed_token', $hashed_token, PDO::PARAM_STR);
+
+        $stmt->execute();                
     }
 }
