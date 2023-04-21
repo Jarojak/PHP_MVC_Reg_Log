@@ -4,7 +4,6 @@ namespace App;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-use PHPMailer\PHPMailer\POP3;
 use PHPMailer\PHPMailer\SMTP;
 use App\Config;
 
